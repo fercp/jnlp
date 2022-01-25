@@ -23,7 +23,7 @@
   </dependencies>
 
   <build>
-    <finalName>${project.artifactId}_V${project.version}</finalName>
+    <finalName>${project.artifactId}__V${project.version}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>

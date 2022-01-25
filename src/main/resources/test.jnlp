@@ -7,9 +7,8 @@
     </information>
     <resources>
         <j2se version="1.2+"/>
-        <jar href="jnlp.jar" main="true" version="1.0"/>
-        <property name="jnlp.versionEnabled"
-                  value="true"/>
+        <jar href="jnlp.jar" main="true" version="1.0-SNAPSHOT"/>
+        <property name="jnlp.versionEnabled" value="true"/>
     </resources>
     <security>
         <all-permissions/>
