@@ -23,7 +23,7 @@
   </dependencies>
 
   <build>
-    <finalName>${project.artifactId}</finalName>
+    <finalName>${project.artifactId}_V${project.version}</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -36,13 +36,47 @@
               <goal>jar</goal>
             </goals>
             <configuration>
+              <excludes>
+                <exclude>resources/*</exclude>
+              </excludes>
               <archive>
                 <manifest>
                   <mainClass>com.fersoft.JnlpApp</mainClass>
                 </manifest>
+                <manifestEntries>
+                  <Permissions>all-permissions</Permissions>
+                </manifestEntries>
               </archive>
-              <outputDirectory>${project.basedir}/target/jnlp</outputDirectory>
+              <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
             </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jarsigner-plugin</artifactId>
+        <version>3.0.0</version>
+        <configuration>
+          <keystore>${project.basedir}/src/main/resources/jnlp.jks</keystore>
+          <alias>jnlpstore</alias>
+          <storepass>password</storepass>
+          <keypass>password</keypass>
+        </configuration>
+        <executions>
+
+          <execution>
+            <phase>compile</phase>
+
+            <id>sign</id>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
           </execution>
         </executions>
       </plugin>
