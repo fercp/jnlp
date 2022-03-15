@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jnlp spec="1.0+"
-      codebase="https://github.com/fercp/jnlp/raw/master/src/main/resources/">
+      codebase="https://borisdaich.github.io/vz-public-apps/">
     <information>
         <title>Hello</title>
         <vendor>Example</vendor>
     </information>
     <resources>
-        <j2se version="1.2+"/>
-        <jar href="jnlp.jar" main="true" version="1.0-SNAPSHOT"/>
+        <j2se version="17+"/>
+        <jar href="jnlp.jar" main="true" version="2.0-SNAPSHOT"/>
         <property name="jnlp.versionEnabled" value="true"/>
     </resources>
     <security>
         <all-permissions/>
     </security>
-    <application-desc/>
+    <application-desc main-class="com.fersoft.JnlpApp"/>
 </jnlp>

@@ -1,128 +1,197 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project
+        xmlns="http://maven.apache.org/POM/4.0.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>com.fersoft</groupId>
-  <artifactId>jnlp</artifactId>
-  <version>1.0-SNAPSHOT</version>
+    <groupId>com.fersoft</groupId>
+    <artifactId>jnlp</artifactId>
+    <version>3.0-SNAPSHOT</version>
 
-  <name>jnlp</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+    <name>jnlp</name>
+    <!-- FIXME change it to the project's website -->
+    <url>http://www.example.com</url>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
-  </properties>
+    <scm>
+        <connection>scm:git:https://github.com/BorisDaich/vz-public-apps</connection>
+    </scm>
 
-  <dependencies>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
+        <TheMainClass>com.fersoft.JnlpApp</TheMainClass>
+    </properties>
 
-  </dependencies>
+    <dependencies>
 
-  <build>
-    <finalName>${project.artifactId}__V${project.version}</finalName>
-    <plugins>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jar-plugin</artifactId>
+    </dependencies>
 
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>jar</goal>
-            </goals>
-            <configuration>
-              <excludes>
-                <exclude>resources/*</exclude>
-              </excludes>
-              <archive>
-                <manifest>
-                  <mainClass>com.fersoft.JnlpApp</mainClass>
-                </manifest>
-                <manifestEntries>
-                  <Permissions>all-permissions</Permissions>
-                </manifestEntries>
-              </archive>
-              <outputDirectory>${project.basedir}/src/main/resources</outputDirectory>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-jarsigner-plugin</artifactId>
-        <version>3.0.0</version>
-        <configuration>
-          <keystore>${project.basedir}/src/main/resources/jnlp.jks</keystore>
-          <alias>jnlpstore</alias>
-          <storepass>password</storepass>
-          <keypass>password</keypass>
-        </configuration>
-        <executions>
+    <build>
+        <finalName>${project.artifactId}__V${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-scm-plugin</artifactId>
+                <version>2.0.0-M1</version>
+                <executions>
+                    <execution>
+                        <id>clone</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>checkout</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>push</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>checkin</goal>
+                        </goals>
+                        <configuration>
+                            <includes>${project.artifactId}__V${project.version}.jar,test.jnlp</includes>
+                        </configuration>
+                    </execution>
+                </executions>
+                <configuration>
+                    <connectionType>connection</connectionType>
+                    <checkoutDirectory>${project.build.directory}/publish</checkoutDirectory>
+                    <message>test</message>
+                    <basedir>${project.build.directory}/publish</basedir>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <version>1.5.2</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <basedir>${project.build.directory}</basedir>
+                    <filesToInclude>publish/test.jnlp</filesToInclude>
+                    <replacements>
+                        <replacement>
+                            <token>main="true" version=".*/</token>
+                            <value>main="true" version="${project.version}"/</value>
+                        </replacement>
+                    </replacements>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
 
-          <execution>
-            <phase>compile</phase>
+                <executions>
+                    <execution>
+                        <id>default-jar</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <excludes>
+                                <exclude>resources/*</exclude>
+                            </excludes>
+                            <archive>
+                                <manifest>
+                                    <mainClass>com.fersoft.JnlpApp</mainClass>
+                                </manifest>
+                                <manifestEntries>
+                                    <Permissions>all-permissions</Permissions>
+                                    <Multi-Release>true</Multi-Release>
+                                </manifestEntries>
+                                <manifestSections>
+                                    <manifestSection>
+                                        <name>${project.build.finalName}</name>
+                                        <manifestEntries>
+                                            <Project-Name>${project.artifactId}</Project-Name>
+                                            <Project-Version>${project.version}</Project-Version>
+                                            <Project-Built-Date>${maven.build.timestamp}</Project-Built-Date>
+                                        </manifestEntries>
+                                    </manifestSection>
+                                </manifestSections>
+                            </archive>
+                            <outputDirectory>${project.build.directory}/publish</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-            <id>sign</id>
-            <goals>
-              <goal>sign</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>verify</id>
-            <goals>
-              <goal>verify</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-        <plugin>
-          <artifactId>maven-clean-plugin</artifactId>
-          <version>3.1.0</version>
-        </plugin>
-        <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
-        <plugin>
-          <artifactId>maven-resources-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.8.0</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-surefire-plugin</artifactId>
-          <version>2.22.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-jar-plugin</artifactId>
-          <version>3.0.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-install-plugin</artifactId>
-          <version>2.5.2</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-deploy-plugin</artifactId>
-          <version>2.8.2</version>
-        </plugin>
-        <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
-        <plugin>
-          <artifactId>maven-site-plugin</artifactId>
-          <version>3.7.1</version>
-        </plugin>
-        <plugin>
-          <artifactId>maven-project-info-reports-plugin</artifactId>
-          <version>3.0.0</version>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jarsigner-plugin</artifactId>
+                <version>3.0.0</version>
+                <configuration>
+                    <keystore>${project.basedir}/src/main/resources/jnlp.jks</keystore>
+                    <alias>jnlpstore</alias>
+                    <archive>${project.build.directory}/publish/${project.artifactId}__V${project.version}.jar</archive>
+                </configuration>
+                <executions>
+
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <id>sign</id>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+
+                </executions>
+            </plugin>
+
+
+        </plugins>
+        <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+            <plugins>
+                <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+                <plugin>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>3.1.0</version>
+                </plugin>
+                <!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+                <plugin>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.8.0</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.22.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>3.0.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.5.2</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.8.2</version>
+                </plugin>
+                <!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+                <plugin>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>3.7.1</version>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>3.0.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>

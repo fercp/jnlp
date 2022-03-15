@@ -4,19 +4,10 @@ simple jnlp app
 1. create keystore with the command
 
   ``keytool -genkey -keyalg RSA -alias jnlpstore -keystore src/main/resources/jnlp.jks -storepass password -validity 360``
-  
-2. change store and key password in pom.xml
 
-``
-
-          <storepass>password</storepass>
-          <keypass>password</keypass>
-          
-``
-  
 2. Produce and sign jar file with
 
-   ``mvn clean compile``
+   ``mvn  -Djarsigner.storepass=password -Djarsigner.keypass=password -Dgithub-user clean package``
    
 3. To update version change version in pom.xml and jnlp file
 
